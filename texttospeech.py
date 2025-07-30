@@ -61,21 +61,38 @@ st.title("🎙️ Leitor de Texto do Informa")
 # -------------------------
 # BLOCO DE CONFIGURAÇÕES DE VOZ
 # -------------------------
+# -------------------------
+# BLOCO DE CONFIGURAÇÕES DE VOZ
+# -------------------------
 with st.expander("⚙️ Configurações de Voz"):
-    voz_preset = st.selectbox("Escolha um preset de voz:", ["Padrão", "Masculino Grave", "Feminino Suave", "Criança Aguda"])
-    velocidade = st.slider("Velocidade", 0.5, 2.0, 1.0, 0.05, key="velocidade")
-    pitch = st.slider("Pitch (Tom)", -20, 20, 0, 1, key="pitch")
-    volume = st.slider("Volume (dB)", -10, 10, 0, 1, key="volume")
+    st.markdown("Personalize a voz gerada com base nos parâmetros disponíveis do gTTS.")
 
-    if voz_preset == "Masculino Grave":
+    idioma = st.selectbox("Idioma da voz (`lang`)", [
+        "pt", "pt-br", "en", "es", "fr", "de", "it", "ja"
+    ], index=0)
+
+    tld = st.selectbox("Sotaque / domínio (`tld`)", [
+        "com.br", "com", "co.uk", "ca", "com.au", "ie", "co.in", "co.za", "pt"
+    ], index=0)
+
+    voz_preset = st.selectbox("Preset de estilo de voz", [
+        "Padrão", "Masculino teste"])
+
+    # Valores padrão
+    velocidade = 1.0
+    pitch = 0
+    volume = 0
+
+    # Ajustes automáticos por preset
+    if voz_preset == "Masculino teste":
         pitch = -4
         velocidade = 0.9
-    elif voz_preset == "Feminino Suave":
-        pitch = 4
-        velocidade = 1.1
-    elif voz_preset == "Criança Aguda":
-        pitch = 8
-        velocidade = 1.3
+    
+
+    # Controles manuais (ajustáveis mesmo com preset)
+    velocidade = st.slider("Velocidade (atempo)", 0.5, 2.0, velocidade, 0.05, key="velocidade")
+    pitch = st.slider("Pitch (Tom)", -20, 20, pitch, 1, key="pitch")
+    volume = st.slider("Volume (dB)", -10, 10, volume, 1, key="volume")
 
 # -------------------------
 # BLOCO DE CONFIGURAÇÃO DE QUANTIDADE
@@ -107,7 +124,7 @@ for i in range(num_blocos):
     with col1:
         if st.button(f"🔊 Preview (Bloco {i+1})"):
             if texto.strip():
-                tts = gTTS(text=texto, lang="pt")
+                tts = gTTS(text=texto, lang=idioma, tld=tld)
                 tts.save(temp_audio)
 
                 filters = []
@@ -139,7 +156,7 @@ for i in range(num_blocos):
                 )
     with col2:
         if st.button(f"💾 Baixar (Bloco {i+1})"):
-            tts = gTTS(text=texto, lang="pt")
+            tts = gTTS(text=texto, lang=idioma, tld=tld)
             tts.save(final_audio)
 
             filters = []
